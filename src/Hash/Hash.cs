@@ -7,7 +7,8 @@ using System.Security.Cryptography;
 
 namespace CipherModule
 {
-    public class SHA
+    
+    public class MD
     {
         public static string MD5(string Origin)
         {
@@ -28,6 +29,11 @@ namespace CipherModule
             }
 
         }
+
+    }
+    
+    public class SHA
+    {
 
         public static string SHA_1(string Origin)
         {
