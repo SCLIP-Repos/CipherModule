@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace CipherModule
+namespace CipherModule.Fake
 {
     public class SimpleRandom
     {
@@ -27,13 +27,11 @@ namespace CipherModule
         public static string Create()
         {
             return Create(10);
-        }
+        }   
 
 
         public static UInt32 CreateN(UInt32 Size)
         {
-
-            
             string n = String.Empty;
 
             Random random = new Random();

@@ -34,7 +34,7 @@ namespace CipherModule
             }
             else if (KeySize == 16 || KeySize == 24 || KeySize == 32)
             {
-                _aesCryptoServiceProvider.KeySize = KeySize * 8;
+                _aesCryptoServiceProvider.KeySize = KeySize * 8;   
             }
             else
             {
@@ -42,8 +42,11 @@ namespace CipherModule
                 return;
             }
 
-            _aesCryptoServiceProvider.Key = Encoding.UTF8.GetBytes(key);
 
+            key = adjust.ReMake(key, '*', _aesCryptoServiceProvider.KeySize / 8);
+
+            _aesCryptoServiceProvider.Key = Encoding.UTF8.GetBytes(key);
+            
             _aesCryptoServiceProvider.Padding = PaddingMode.PKCS7;
 
 
@@ -70,6 +73,7 @@ namespace CipherModule
         {
             SET(Key, KeySize, Mode);
 
+            Iv = adjust.ReMake(Iv, '*', 16);
 
             //SET IV
             _aesCryptoServiceProvider.IV = Encoding.UTF8.GetBytes(Iv);
@@ -142,6 +146,7 @@ namespace CipherModule
 
     }
 
+    /*
     public class RijndaelCryptor:Interfaces.Out
     {
         private string print, err;
@@ -160,7 +165,7 @@ namespace CipherModule
 
             //SET KEY
 
-            _rijndael.Key = Encoding.UTF8.GetBytes(AdjustSize(Key, PaddingChar, 32));
+            _rijndael.Key = Encoding.UTF8.GetBytes(Common.AdjustSize(Key, PaddingChar, 32));
 
             _rijndael.KeySize = 256;
 
@@ -188,7 +193,7 @@ namespace CipherModule
             SET(Key, PaddingChar, Mode);
 
             //SET IV
-            _rijndael.IV = Encoding.UTF8.GetBytes(AdjustSize(Iv,PaddingChar,32));
+            _rijndael.IV = Encoding.UTF8.GetBytes(Common.AdjustSize(Iv,PaddingChar,32));
         }
 
 
@@ -258,9 +263,13 @@ namespace CipherModule
             SetErr(err);
         }
 
+           
+    }*/
 
-
-        private string AdjustSize(string Origin,char AppendChar,int Size)
+    /*
+    internal class Common
+    {
+        internal static string AdjustSize(string Origin, char AppendChar, int Size)
         {
             string RemakeStr = String.Empty;
 
@@ -287,4 +296,5 @@ namespace CipherModule
             return RemakeStr;
         }
     }
+    */
 }

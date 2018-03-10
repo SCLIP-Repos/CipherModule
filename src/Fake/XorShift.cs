@@ -4,34 +4,48 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CipherModule
+namespace CipherModule.Fake
 {
     public class XorShift
-    {
-        private UInt32 _a, _b, _c,_d,_x;
-
-
-        public XorShift()
+    {/*
+        public uint Create
         {
-            _a = SimpleRandom.CreateN(9);
+            get
+            {
+                GeneratorN generator = new GeneratorN();
 
-            _b = SimpleRandom.CreateN(9);
-
-            _c = SimpleRandom.CreateN(9);
-
-            _d = 123456789;
+                return generator.Create();
+            }
         }
 
-
-        public void Create()
+        private class GeneratorN
         {
-            _x = _a ^ (_a << 11);
+            private UInt32 _a, _b, _c, _d, _x;
+            
+            internal uint Create()
+            {
+                _a = 123456789;
 
-            _a = _b;
+                _b = 362436069;
 
-            _c = _d;
+                _c = 521288629;
+                
+                //_d = 88675123;//SEED
 
-            Console.WriteLine(_d = (_d ^ (_d >> 19)) ^ (_x ^ (_x >> 8)));
-        }
+                _d = Convert.ToUInt32( DateTime.Now.Ticks.ToString().Remove(0, 9));
+
+                _x = _a ^ (_a << 11);
+
+                _a = _b;
+
+                _b = _c;
+
+                _c = _d;
+
+                return _d = (_d ^ (_d >> 19)) ^ (_x ^ (_x >> 8));
+            }
+
+        }*/
+
     }
 }
