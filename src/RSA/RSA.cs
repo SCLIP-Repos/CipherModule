@@ -11,7 +11,8 @@ namespace CipherModule.RSA
 
 
 
-        public RSA() => rsaCrypto = new RSACryptoServiceProvider();
+
+        public RSA(int KeySize) => rsaCrypto = new RSACryptoServiceProvider(KeySize);
 
 
 
@@ -62,19 +63,22 @@ namespace CipherModule.RSA
 
         public class Key
         {
+            public int KeySize = 0;
+
             public void CreateKeyPair(out string PublicKey, out string PrivateKey, string ContainerName)
             {
                 CspParameters cspParameters = new CspParameters();
 
                 cspParameters.KeyContainerName = ContainerName;
 
-                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(cspParameters))
+                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(KeySize,cspParameters))
                 {
                     PublicKey = rsa.ToXmlString(false);
 
                     PrivateKey = rsa.ToXmlString(true);
                 }
             }
+
 
             public void CreateKeyPair(out string PublicKey, out string PrivateKey, out string ContainerName)
             {
