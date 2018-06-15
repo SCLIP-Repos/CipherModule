@@ -1,102 +1,159 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Security.Cryptography;
+
 
 namespace CipherModule.Rijndael
 {
-    partial class AES
+    public partial class AES
     {
 
-        private AesCryptoServiceProvider _aesCrypto;
+        private AesCryptoServiceProvider aesCryptoService;
 
-        private Ciphers _ciphers;
-
-
-
-        public AES() => _aesCrypto = new AesCryptoServiceProvider();
+        private ICryptoTransform cryptoTransform;
 
 
-        public  struct SET
+
+        public enum Mode{ECB,CBC}
+
+
+        public AES() => aesCryptoService = new AesCryptoServiceProvider();
+
+
+        public void SET(string Key,int KeySize)
         {
-            public static string Key { internal get; set; }
+            if (KeySize == 128 || KeySize == 192 || KeySize == 256)
+            {
+                aesCryptoService.KeySize = KeySize;   
+            }
+            else if (KeySize == 16 || KeySize == 24 || KeySize == 32)
+            {
+                aesCryptoService.KeySize = KeySize * 8;
+            }
+            else
+            {
+                Console.WriteLine("Key size err");
+                return;
+            }
 
-            public static string Iv { internal get; set; }
+            aesCryptoService.Key = Encoding.UTF8.GetBytes(AdjustSize(Key, aesCryptoService.KeySize / 8, '*'));
 
-            public static uint KeySize { internal get; set; }
+            aesCryptoService.Padding = PaddingMode.PKCS7;
+
         }
 
-
-        public string Encrypt(string Str,Enum CipherMode)
+        public void SET(string Key,string Iv,int KeySize)
         {
+            SET(Key, KeySize);
 
-            switch(CipherMode)
-            {
-                case CipherChannel.ecb:
-                    _aesCrypto.Mode = System.Security.Cryptography.CipherMode.ECB;
-                    return null;
 
-                case CipherChannel.cbc:
-                    _aesCrypto.Mode = System.Security.Cryptography.CipherMode.CBC;
-                    return null;
+            aesCryptoService.IV = Encoding.UTF8.GetBytes( AdjustSize(Iv, 16, '*') ); 
 
-                default:
-                    return null;
-            }
-        }
-
-        public string Decrypt(string Str, Enum CipherMode)
-        {
-            
-
-            switch (CipherMode)
-            {
-                case CipherChannel.ecb:
-                    _aesCrypto.Mode = System.Security.Cryptography.CipherMode.ECB;
-                    return null;
-
-                case CipherChannel.cbc:
-                    _aesCrypto.Mode = System.Security.Cryptography.CipherMode.CBC;
-                    return null;
-
-                default:
-                    return null;
-            }
         }
         
 
-        private class Ciphers:AES
+
+
+        public string Encrypt(string Str, Enum @enum)
         {
-            private Ciphers()
+            switch (@enum)
             {
+                case Mode.ECB:
+                    aesCryptoService.Mode = CipherMode.ECB;
+                    break;
 
-            }
-
-            public string ECB_Encrypt(string Str)
-            {
-                return "";
-            }
-
-            public string ECB_Decrypt(string Str)
-            {
-                return null;
-            }
-
-            public string CBC_Encrypt(string Str)
-            {
-                return null;
+                case Mode.CBC:
+                    aesCryptoService.Mode = CipherMode.CBC;
+                    break;
+                default:
+                    break;
             }
 
 
-            public string CBC_Decrypt(string Str)
+
+            cryptoTransform = aesCryptoService.CreateEncryptor();
+
+
+            byte[] StrBytes = Encoding.UTF8.GetBytes(Str);
+
+            try
             {
-                return null;
+                byte[] TfromFBBytes = cryptoTransform.TransformFinalBlock(StrBytes, 0, StrBytes.Length);    
+
+                return Convert.ToBase64String(TfromFBBytes);
+            }
+            catch
+            {
+                return null;    
             }
 
-
-            private void Close() => _aesCrypto.Dispose();
         }
+
+
+
+        public string Decrypt(string Str, Enum @enum)
+        {
+            switch (@enum)
+            {
+                case Mode.ECB:
+                    aesCryptoService.Mode = CipherMode.ECB;
+                    break;
+
+                case Mode.CBC:
+                    aesCryptoService.Mode = CipherMode.CBC;
+                    break;
+                default:
+                    break;
+            }
+
+
+
+
+
+            cryptoTransform = aesCryptoService.CreateDecryptor();
+
+
+            byte[] StrBytes = Convert.FromBase64String(Str);
+
+
+
+            try
+            {
+                byte[] TfromFBBytes = cryptoTransform.TransformFinalBlock(StrBytes, 0, StrBytes.Length);
+
+
+                return Encoding.UTF8.GetString(TfromFBBytes);
+            }
+            catch
+            {
+                return null;    
+            }
+
+        }
+
+
+        public void Close() => aesCryptoService.Dispose();
+
+
+        private string AdjustSize(string SourceStr,int Size,char AppendChar)
+        {
+            int SourceSize = SourceStr.Length;
+
+            if (SourceSize < Size)
+            {
+                for (int i = 0; i < Size - SourceSize;i++)
+                    SourceStr += AppendChar;
+
+                return SourceStr;
+
+            }
+            else if (SourceSize > Size)
+            {
+                return SourceStr.Remove(Size);
+            }
+            else
+                return SourceStr;
+        }
+
     }
 }
