@@ -48,7 +48,7 @@ namespace CipherModule.Hash
         public  class SecureSHA:SHA
         {
 #pragma warning disable RECS0146 
-            public  static  string SHA256(string Str, char Salt, int Count)
+            public  static  string SHA256(string Str, string Salt, int Count)
 #pragma warning restore RECS0146 
             {
                 string tmp = SHA.SHA256(Str + Salt);
@@ -63,7 +63,7 @@ namespace CipherModule.Hash
 
 
 #pragma warning disable RECS0146 
-            public static string SHA384(string Str, char Salt, int Count)
+            public static string SHA384(string Str, string Salt, int Count)
 #pragma warning restore RECS0146 
             {
                 string tmp = SHA.SHA384(Str + Salt);
